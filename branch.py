@@ -15,7 +15,7 @@ def match_branches(selections, tree):
 	if not type(selections) == list:
 		selections = [selections]
 
-	regexes = []
+	regexs = []
 	for line in selections:
 		line = line.strip() # ditch whitespace (regex should use $^ delims if necessary)
 		if line == '' or line.startswith('#'):
