@@ -10,7 +10,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="List branches of a tree in a rootfile")
 	parser.add_argument('root_file', type=str,
 			help='Input root file')
-	parser.add_argument('--tree', type=str, nargs=1, default="physics",
+	parser.add_argument('--tree', type=str, default="physics",
 			help='The name of the TTree within the root file')
 	args = parser.parse_args()
 
