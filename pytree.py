@@ -31,23 +31,26 @@ def setup_tree(name, treedef):
 	branch_names = sorted(treedef.keys())
 	for bname in branch_names:
 		btype = treedef[bname]
-
-		if not type(btype) == list:
-			bind_scalar(t, bname, btype)
-		elif len(btype) and type(btype[0]) == list:
-			if len(btype[0]):
-				bind_vector2(t, bname, btype[0][0])
-			else:
-				bind_vector2(t, bname, float)
-		elif len(btype):
-			bind_vector(t, bname, btype[0])
-		else:
-			bind_vector(t, bname, float)
+		bind_any(t, bname, btype)
 	
 	return t
 
 typenames_long = { float: 'double', int: 'int' }
 typenames_short = { float: 'D', int: 'I' }
+
+def bind_any(t, bname, btype):
+	if not type(btype) == list:
+		bind_scalar(t, bname, btype)
+	elif len(btype) and type(btype[0]) == list:
+		if len(btype[0]):
+			bind_vector2(t, bname, btype[0][0])
+		else:
+			bind_vector2(t, bname, float)
+	elif len(btype):
+		bind_vector(t, bname, btype[0])
+	else:
+		bind_vector(t, bname, float)
+
 
 def bind_scalar(t, bname, btype):
 	v = np.array([0], dtype=btype)
