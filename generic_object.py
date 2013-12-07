@@ -3,6 +3,18 @@
 '''
 simple class to load in vector-branches grouped by a common
 logical prefix. individual attributes are lazy-loaded.
+
+for example, suppose you have a TTree with some vector branches which represent muons:
+	mu_pt, mu_eta, mu_phi, mu_E
+
+you can write your code as those these muons are objects:
+	for evt in tree:
+		all_muons = get_objects(tree, 'mu_')
+
+		highpt_muons = [m for m in all_muons if m.pt > 100e3]
+		central_muons = [m for m in highpt_muons if m.eta < 1.5]
+
+		# ...
 '''
 class generic_obj:
 	# tree          reference to tree where the object is stored
