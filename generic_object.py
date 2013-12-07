@@ -4,6 +4,9 @@
 simple class to load in vector-branches grouped by a common
 logical prefix. individual attributes are lazy-loaded.
 
+N.B.: the code assumes there is an associated branch "<prefix>_n" that contains the length
+of the vectors for the event. (FIXME?)
+
 for example, suppose you have a TTree with some vector branches which represent muons:
 	mu_pt, mu_eta, mu_phi, mu_E
 
