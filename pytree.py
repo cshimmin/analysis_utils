@@ -8,6 +8,12 @@ to create a new tree with some branches, do:
 	t = setup_tree('awesometree', treedef)
 
 see below for example tree definition
+
+N.B.: due to the fact that python's primitive types are all pass-by-value,
+for scalar-type branches, you'll have to use zero-indexing to write values:
+	t = setup_tree('physics', {'some_scalar': float})
+	t.some_scalar[0] = 3.14
+	t.Fill()
 '''
 
 # example tree definition
