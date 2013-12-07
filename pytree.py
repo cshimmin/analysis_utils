@@ -3,6 +3,11 @@ import numpy as np
 
 '''
 simple tree definitions using python dictionaries
+
+to create a new tree with some branches, do:
+	t = setup_tree('awesometree', treedef)
+
+see below for example tree definition
 '''
 
 # example tree definition
