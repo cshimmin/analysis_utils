@@ -16,7 +16,7 @@ Creating and writing NTuples/TTrees
 This is dead-easy with the pytree module. Take a look at the source code and output of the following standalone example:
 ```
 $ cd /path/to/analysis_utils/example
-$ ./output_ntup.py
+$ ./output_ntuple.py
 ```
 This program creates a ROOT file named "ntuple.root", which contains a TTree named "example". The TTree is populated with a few branches containing random values of various distributions and types.
 
