@@ -61,4 +61,4 @@ n_hard_muons:	66942
 met_smeared:	43941
 ```
 
-Note that, for example, the "shift muon pt" systematic has considerably higher acceptance at the `hardmu` step, as one would expect. Note also that `n_hard_muons` was calculated 66942 times in total; this is because it was calculated 33471 times for the nominal cutflow, and additional 33471 for the shifted variation. It was not recalculated for any of the other variations.
+Note that for example, the "shift muon pt" systematic (which adds a constant value to all muon momenta) has considerably higher acceptance at the `hardmu` step, as one would expect. Note also that `n_hard_muons` was calculated 66942 times in total; this is because it was calculated 33471 times for the nominal cutflow, and additional 33471 for the shifted variation. It was not recalculated for any of the other variations.
