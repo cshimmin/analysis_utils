@@ -3,18 +3,16 @@
 import variation
 
 def run(input_tree, nominal=None, variations=[]):
-	# make sure that nominal is included in the full list
-	if nominal and not nominal in variations:
-		variations.append(nominal)
-
 	# set the fallback reference for all the variations.
 	for v in variations:
-		v.set_fallback(nominal if nominal else input_tree)
-
-	# set the fallback for nominal to be just the ttree
-	if nominal:
-		nominal.set_fallback(input_tree)
+		v.set_source(input_tree)
+		v.set_fallback(nominal)
 	
+	# make sure that nominal is included in the full list
+	if nominal and not nominal in variations:
+		nominal.set_source(input_tree)
+		variations.append(nominal)
+
 	variations_and_functions = [(v, v.process_fn) for v in variations]
 
 	if len(variations) == 0:
@@ -24,12 +22,17 @@ def run(input_tree, nominal=None, variations=[]):
 	total_entries = input_tree.GetEntries()
 	for i,evt in enumerate(input_tree):
 		if i%1000==0:
-			print "Processing %d/%d ~ %.2f%%" % (i, total_entries, 100.*i/total_entries)
+			print "Processed %d/%d ~ %.2f%%" % (i, total_entries+1, 100.*i/(total_entries+1))
+
+		for v in variations:
+			# NB: all variations have to be reset before
+			# _any_ run, since they may reference
+			# each other's cache (i.e. FallbackCalculation)
+			v.reset()
 
 		keep = False
 		for v,p in variations_and_functions:
 			try:
-				v.reset()
 				p(v)
 				v.set_valid(True)
 				keep = True

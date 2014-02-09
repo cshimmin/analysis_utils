@@ -33,8 +33,9 @@ class CalculationFallback(Exception):
  Base class for variational analysis selections
 '''
 class AnalysisVariation:
-	def __init__(self, fallback=None, process_fn=None, name='Variation'):
+	def __init__(self, source=None, process_fn=None, name='Variation', fallback=None, **kwargs):
 		self.__calculables = {}
+		self.__source = source
 		self.__fallback = fallback
 
 		self.process_fn = process_fn
@@ -53,15 +54,14 @@ class AnalysisVariation:
 
 		self.__calculables = dict([ (n[5:], m) for (n,m) in inspect.getmembers(self)
 				if n.startswith('_get_') and inspect.ismethod(m) ])
-
+	
+	def set_source(self, source):
+		self.__source = source
 	def set_fallback(self, fallback):
-		# not sure if we have to do something clever here yet,
-		# in case user calls after initialization
 		if fallback == self:
-			# this will lead to infinite recursion...
 			return
 		self.__fallback = fallback
-	
+
 	def process(self):
 		# this is slow... maybe we should optimize.
 		# but we'll put it here as a convenience method.
@@ -78,6 +78,16 @@ class AnalysisVariation:
 
 	def cut_if(self, expr, cutname):
 		self.cutflow.cut_if(expr, cutname)
+	
+	def defer(self):
+		if self.__fallback:
+			raise CalculationFallback
+	def defer_if(self, expr):
+		if self.__fallback and expr:
+			raise CalculationFallback
+	def defer_unless(self, expr):
+		if self.__fallback and not expr:
+			raise CalculationFallback
 	
 	def reset(self):
 		# delete any cached calcuable results
@@ -108,10 +118,13 @@ class AnalysisVariation:
 			v = self.__calculables[attr]()
 			setattr(self, attr, v)
 			return v
-		except KeyError, CalculationFallback:
+		except KeyError:
 			# we're not managing this attribute, so escalate to the
-			# "fallback" object (which by default is the underlying
+			# "source" object (which by default is the underlying
 			# TTree):
+			return getattr(self.__source, attr)
+		except CalculationFallback:
+			# defer the calculation to the fallback object
 			return getattr(self.__fallback, attr)
 
 	def __str__(self):
