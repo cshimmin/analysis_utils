@@ -11,7 +11,8 @@ import ROOT as r
 import numpy as np
 
 if __name__ == "__main__":
-	outfile = r.TFile('output_ntuple.root', 'recreate')
+	# create an output file
+	outfile = r.TFile('ntuple.root', 'recreate')
 
 	ntup = PyTree('example', 'example')
 
@@ -22,9 +23,8 @@ if __name__ == "__main__":
 		ntup.reset()
 
 		# calculate some silly variables at random
-		uniform1 = np.random.rand()
-		uniform50 = np.random.rand()*50.
-		gauss = np.random.normal(0,1)
+		uniform = np.random.rand()
+		gauss = np.random.normal(0,5)
 
 		rlength = int(np.random.gamma(1, 5))
 		rvector_gamma2 = np.random.gamma(2, 25e3, rlength)
@@ -33,12 +33,11 @@ if __name__ == "__main__":
 		# now write them out. note that the branches
 		# are created on the fly as needed.
 		ntup.write_branch(i, 'event_number', int)
-		ntup.write_branch(uniform1, 'uniform1', float)
-		ntup.write_branch(uniform50, 'uniform50', int)
+		ntup.write_branch(uniform, 'uniform', float)
 		ntup.write_branch(gauss, 'gauss', float)
+		ntup.write_branch(rlength, 'rvector_n', int)
 		ntup.write_branch(rvector_gamma2, 'rvector_gamma2', [float])
 		ntup.write_branch(rvector_gamma3, 'rvector_gamma3', [float])
-		ntup.write_branch(rlength, 'rvector_n', int)
 
 		# For illustration, write one branch out later
 		# than the others. This branch will be
