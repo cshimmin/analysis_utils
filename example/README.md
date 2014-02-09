@@ -11,19 +11,6 @@ $ export PYTHONPATH=$PYTHONPATH:/path/to/analysis_utils/..
 
 (note that the directory _containing_ your copy of analysis_utils is added to the path)
 
-Datasets
---------
-Some of these examples require input data in a specific ntuple format. You can get a copy of my test dataset at http://cshimmin.web.cern.ch/cshimmin/analysis_example_data.tgz (488Mb).
-
-The test set contains 100,000 Monte Carlo events for each of several physics processes in pp collisions at sqrt(s)=8TeV:
- * `wgamma.root`: W+photon production; W decays leptonically
- * `wwllvv.root`: WW diboson production; both W's decay leptonically
- * `wzlllv.root`: WZ dibison production; both W leptonically, and Z decays to charged leptons
- * `zll.root`: Single Z boson production; Z decays to charged leptons
- * `zzllvv.root`: ZZ diboson production; one Z decays to charged leptons, the other to neutrinos
-
-The event generation and detector simulation was performed with the [MadGraph + Pythia + Delphes3](http://madgraph.hep.uiuc.edu/) toolchain. In visible leptonic decays, the tau flavor is excluded.
-
 Creating and writing NTuples/TTrees
 -----------------------------------
 This is dead-easy with the pytree module. Take a look at the source code and output of the following standalone example:
@@ -58,7 +45,7 @@ $ python
 
 Variational analysis
 --------------------
-To run the example variational analysis, first download the test dataset to your example directory:
+To run the example variational analysis, first download the test dataset (_see below_) to your example directory:
 ```
 $ cd /path/to/analysis_utils/example
 $ wget http://cshimmin.web.cern.ch/cshimmin/analysis_example_data.tgz
@@ -101,3 +88,16 @@ met_smeared:	43941
 ```
 
 Note that for example, the "shift muon pt" systematic (which adds a constant value to all muon momenta) has considerably higher acceptance at the `hardmu` step, as one would expect. Note also that `n_hard_muons` was calculated 66942 times in total; this is because it was calculated 33471 times for the nominal cutflow, and additional 33471 for the shifted variation. It was not recalculated for any of the other variations.
+
+Datasets
+--------
+Some of these examples require input data in a specific ntuple format. You can get a copy of my test dataset at http://cshimmin.web.cern.ch/cshimmin/analysis_example_data.tgz (488Mb).
+
+The test set contains 100,000 Monte Carlo events for each of several physics processes in pp collisions at sqrt(s)=8TeV:
+ * `wgamma.root`: W+photon production; W decays leptonically
+ * `wwllvv.root`: WW diboson production; both W's decay leptonically
+ * `wzlllv.root`: WZ dibison production; both W leptonically, and Z decays to charged leptons
+ * `zll.root`: Single Z boson production; Z decays to charged leptons
+ * `zzllvv.root`: ZZ diboson production; one Z decays to charged leptons, the other to neutrinos
+
+The event generation and detector simulation was performed with the [MadGraph + Pythia + Delphes3](http://madgraph.hep.uiuc.edu/) toolchain. In visible leptonic decays, the tau flavor is excluded.
