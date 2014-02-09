@@ -43,8 +43,8 @@ class ExampleVariation(variation.AnalysisVariation):
 	def __init__(self, *args, **kwargs):
 		variation.AnalysisVariation.__init__(self, *args, **kwargs)
 		# capture the (optional) systematics parameters
-		self.mu_shift = kwargs.get('mu_shift', 0)
-		self.met_width = kwargs.get('met_width', 0)
+		self._mu_shift = kwargs.get('mu_shift', 0)
+		self._met_width = kwargs.get('met_width', 0)
 	
 	##########################
 	## Calculable functions ##
@@ -54,34 +54,32 @@ class ExampleVariation(variation.AnalysisVariation):
 	def _get_n_muons(self):
 		self.defer()
 		report_calculation('n_muons')
-		return self.mu_staco_pt.size()
+		return self.mu_n
 
-	''' Get the number of muons w/ pt>80GeV.
+	''' Get the number of muons w/ pt>65GeV.
 	    Subject to the mu_shift systematic '''
 	def _get_n_hard_muons(self):
-		self.defer_unless( self.mu_shift > 0 )
-		if self.name == 'jets CR':
-			print "why am i calc'ing?"
+		self.defer_unless( self._mu_shift > 0 )
 		report_calculation('n_hard_muons')
-		return sum([(mpt + self.mu_shift) > 80e3 for mpt in self.mu_staco_pt])
+		return sum([(mpt + self._mu_shift) > 65 for mpt in self.mu_pt])
 
 	''' Get the number of jets in the D3PD '''
 	def _get_n_jets(self):
 		self.defer()
 		report_calculation('n_jets')
-		return self.jet_AntiKt4LCTopo_pt.size()
+		return self.jet_n
 
-	''' Get the (possibly smeared) MET from the D3PD.
+	''' Get the smeared MET (random MET added to D3PD value)
 	    Subject to the met_width parameter '''
-	def _get_met(self):
-		if self.met_width == 0:
+	def _get_met_smeared(self):
+		if self._met_width == 0:
 			self.defer()
-			report_calculation('met')
-			return self.MET_RefFinal_et
+			report_calculation('met_smeared')
+			return self.met_et
 
 		# calculate MET with some random smearing
-		report_calculation('met')
-		return smear_met(self.MET_RefFinal_et, self.MET_RefFinal_phi, self.met_width)
+		report_calculation('met_smeared')
+		return smear_met(self.met_et, self.met_et, self._met_width)
 
 
 
@@ -92,16 +90,16 @@ class ExampleVariation(variation.AnalysisVariation):
 
 ''' A very basic (if not very meaningful) analysis cutflow '''
 def analysis_cutflow(v):
-	v.cut_if(v.n_muons < 3, "3muons")
+	v.cut_if(v.n_muons < 2, "2muons")
 	v.cut_if(v.n_hard_muons < 1, "hardmu")
-	v.cut_if(v.met < 50e3, "met50")
+	v.cut_if(v.met_smeared < 80, "met80")
 
 ''' A control region cutflow, that implements the basic cutflow
     above, and additionally requires a bunch of jets '''
 def jetCR_cutflow(v):
 	analysis_cutflow(v)
 
-	v.cut_if(v.n_jets < 20, "20jets")
+	v.cut_if(v.n_jets < 3, "3jets")
 
 
 
@@ -112,7 +110,7 @@ def jetCR_cutflow(v):
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser("test variational analysis")
-	parser.add_argument('--tree', default='susy', help='the input TTree name')
+	parser.add_argument('--tree', default='physics', help='the input TTree name')
 	parser.add_argument('input_file', nargs='+', help='the input file(s) to use')
 	args = parser.parse_args()
 
@@ -127,9 +125,9 @@ if __name__ == "__main__":
 
 	variations_to_run = [
 		ExampleVariation(process_fn=analysis_cutflow,
-			name='shift muon pt', mu_shift=25e3),
+			name='shift muon pt', mu_shift=25),
 		ExampleVariation(process_fn=analysis_cutflow,
-			name='smeared met', met_width=20e3),
+			name='smeared met', met_width=20),
 		ExampleVariation(process_fn=jetCR_cutflow,
 			name='jets CR'),
 	]

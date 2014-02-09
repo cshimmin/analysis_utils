@@ -21,8 +21,8 @@ def run(input_tree, nominal=None, variations=[]):
 	
 	total_entries = input_tree.GetEntries()
 	for i,evt in enumerate(input_tree):
-		if i%1000==0:
-			print "Processed %d/%d ~ %.2f%%" % (i, total_entries+1, 100.*i/(total_entries+1))
+		if i%5000==0:
+			print "Processed %d/%d ~ %.2f%%" % (i, total_entries, 100.*i/(total_entries))
 
 		for v in variations:
 			# NB: all variations have to be reset before
