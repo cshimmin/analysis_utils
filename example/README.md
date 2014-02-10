@@ -6,16 +6,15 @@ Setup
 -----
 You will need to ensure that the analysis_utils modules are accessible from your `PYTHONPATH`:
 ```
-$ export PYTHONPATH=$PYTHONPATH:/path/to/analysis_utils/..
+git clone git@github.com:cshimmin/analysis_utils.git
+export PYTHONPATH=$PYTHONPATH:`pwd`
+cd analysis_utils/example
 ```
-
-(note that the directory _containing_ your copy of analysis_utils is added to the path)
 
 Creating and writing NTuples/TTrees
 -----------------------------------
 This is dead-easy with the pytree module. Take a look at the source code and output of the following standalone example:
 ```
-$ cd /path/to/analysis_utils/example
 $ ./output_ntuple.py
 ```
 This program creates a ROOT file named "ntuple.root", which contains a TTree named "example". The TTree is populated with a few branches containing random values of various distributions and types.
@@ -47,14 +46,13 @@ Variational analysis
 --------------------
 To run the example variational analysis, first download the test dataset (_see below_) to your example directory:
 ```
-$ cd /path/to/analysis_utils/example
 $ wget http://cshimmin.web.cern.ch/cshimmin/analysis_example_data.tgz
 $ tar -xvzf analysis_example_data.tgz
 ```
 
 Next, run the example on one (or more) of the MC files:
 ```
-$ ./example/variation_example.py analysis_example_data/zzllvv.root
+$ ./variation_example.py analysis_example_data/zzllvv.root
 ```
 
 When the analysis has finished running, the program will print a summary:
