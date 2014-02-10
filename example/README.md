@@ -6,10 +6,11 @@ Setup
 -----
 You will need to ensure that the analysis_utils modules are accessible from your `PYTHONPATH`:
 ```
-git clone git@github.com:cshimmin/analysis_utils.git
-export PYTHONPATH=$PYTHONPATH:`pwd`
-cd analysis_utils/example
+$ git clone https://github.com/cshimmin/analysis_utils.git
+$ export PYTHONPATH=$PYTHONPATH:`pwd`
+$ cd analysis_utils/example
 ```
+The following examples use the argparse package; if you're using a version of python earlier that 2.7, please make sure this package is installed.
 
 Creating and writing NTuples/TTrees
 -----------------------------------
@@ -46,7 +47,7 @@ Variational analysis
 --------------------
 To run the example variational analysis, first download the test dataset (_see below_) to your example directory:
 ```
-$ wget http://cshimmin.web.cern.ch/cshimmin/analysis_example_data.tgz
+$ curl http://cshimmin.web.cern.ch/cshimmin/analysis_example_data.tgz -o analysis_example_data.tgz
 $ tar -xvzf analysis_example_data.tgz
 ```
 
