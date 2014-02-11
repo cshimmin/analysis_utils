@@ -28,6 +28,8 @@ class Cutflow:
 
     def __repr__(self):
         rep_str = ""
+        name_width = max(map(len,self.cut_names))
         for cut in self.cut_names:
-            rep_str += "%s:\t%d\n" % (cut, self.cut_counts[cut])
+            padding = name_width-len(cut) + 2
+            rep_str += "%s:%s%d\n" % (cut, " "*padding, self.cut_counts[cut])
         return rep_str
