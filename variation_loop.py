@@ -3,7 +3,7 @@
 import variation
 
 
-def run(input_tree, nominal=None, variations=[]):
+def run(input_tree, nominal=None, variations=[], **kwargs):
     # set the fallback reference for all the variations.
     for v in variations:
         v.set_source(input_tree)
@@ -14,16 +14,20 @@ def run(input_tree, nominal=None, variations=[]):
         nominal.set_source(input_tree)
         variations.append(nominal)
 
-    variations_and_functions = [(v, v.process_fn) for v in variations]
+    variations_and_functions = [(v, v._process_fn) for v in variations]
 
     if len(variations) == 0:
         print "Warning! No variations to process. Aborting..."
         return
 
     total_entries = input_tree.GetEntries()
+    entry_limit = kwargs.get('entry_limit', total_entries+1)
     for i, evt in enumerate(input_tree):
         if i % 5000 == 0:
             print "Processed %d/%d ~ %.2f%%" % (i, total_entries, 100. * i / (total_entries))
+            if i>=entry_limit:
+                print "Entry limit reached (%d); quitting early." % (entry_limit)
+                break
 
         for v in variations:
             # NB: all variations have to be reset before
@@ -44,7 +48,7 @@ def run(input_tree, nominal=None, variations=[]):
         if keep:
             # if any of the variations managed to pass, write out everything.
             for v in variations:
-                v.write_ntuple()
+                v.accept_entry()
 
 if __name__ == "__main__":
     pass

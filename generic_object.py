@@ -19,8 +19,6 @@ you can write your code as those these muons are objects:
 
             # ...
 '''
-
-
 class generic_obj:
     # tree          reference to tree where the object is stored
     # prefix        logical group prefix
@@ -44,20 +42,18 @@ class generic_obj:
         datasane = filter(lambda d: not 'vector' in str(d[1].__class__), data)
         return dict(datasane)
 
-# conveneince methods to generate/load lists of D3PD objects based on
-# their branch prefix
 
-
+''' conveneince methods to generate/load lists of D3PD objects based on
+    their branch prefix '''
 def fetch_objects(tree, prefix):
     for i in xrange(getattr(tree, '%s_n' % prefix)):
         obj = generic_obj(tree, prefix, i)
         yield obj
 
-# same as above, but load the generator into a list
-
-
+''' Same as above, but load the whole generator into a list '''
 def get_objects(tree, prefix):
-    return [o for o in fetch_objects(tree, prefix)]
+    return list(fetch_objects(tree, prefix))
+
 
 if __name__ == "__main__":
     pass
