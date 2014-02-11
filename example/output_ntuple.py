@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # create an output file
     outfile = r.TFile('ntuple.root', 'recreate')
 
-    ntup = PyTree('example', 'example')
+    ntup = PyTree('example', 'example', verbose=True)
 
     print "Generating output..."
     N_EVENTS = 5000
@@ -36,11 +36,14 @@ if __name__ == "__main__":
 
         # now write them out. note that the branches
         # are created on the fly as needed.
-        ntup.write_branch(i, 'event_number', int)
-        ntup.write_branch(uniform, 'uniform', float)
+        # note that type specifiers are optional, but
+        # are generally a good idea given python's loose
+        # typesystem.
+        ntup.write_branch(i, 'event_number')
+        ntup.write_branch(uniform, 'uniform')
         ntup.write_branch(gauss, 'gauss', float)
         ntup.write_branch(rlength, 'rvector_n', int)
-        ntup.write_branch(rvector_gamma2, 'rvector_gamma2', [float])
+        ntup.write_branch(rvector_gamma2, 'rvector_gamma2')
         ntup.write_branch(rvector_gamma3, 'rvector_gamma3', [float])
 
         # For illustration, write one branch out later
