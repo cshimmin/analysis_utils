@@ -6,8 +6,8 @@ r.PyConfig.IgnoreCommandLineOptions = True
 
 import analysis_utils.variation as variation
 from analysis_utils.variation_loop import run
-from analysis_utils.pytree import PyTree
-from analysis_utils.generic_object import get_objects, tlv_particle, met_object
+from analysis_utils.root.pytree import PyTree
+from analysis_utils.root.dpd_object import get_objects, tlv_particle, met_object
 
 
 ##########################

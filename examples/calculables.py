@@ -6,8 +6,8 @@ r.PyConfig.IgnoreCommandLineOptions = True
 
 from analysis_utils.variation_loop import run
 from analysis_utils.variation import AnalysisVariation
-from analysis_utils.generic_object import fetch_objects, build_tlv, tlv_particle, met_object
-from analysis_utils.pytree import PyTree
+from analysis_utils.root.dpd_object import fetch_objects, build_tlv, tlv_particle, met_object
+from analysis_utils.root.pytree import PyTree
 
 class ExampleAnalysis(AnalysisVariation):
     def __init__(self, *args, **kwargs):

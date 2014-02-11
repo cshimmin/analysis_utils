@@ -7,8 +7,8 @@ Setup
 You will need to ensure that the analysis_utils modules are accessible from your `PYTHONPATH`:
 ```
 $ git clone https://github.com/cshimmin/analysis_utils.git
-$ export PYTHONPATH=$PYTHONPATH:`pwd`
-$ cd analysis_utils/example
+$ export PYTHONPATH=$PYTHONPATH:`pwd`/analysis_utils
+$ cd analysis_utils/examples
 ```
 The following examples use the argparse package; if you're using a version of python earlier that 2.7, please make sure this package is installed.
 

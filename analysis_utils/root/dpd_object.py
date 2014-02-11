@@ -3,25 +3,33 @@
 import ROOT as r
 
 '''
-simple class to load in vector-branches grouped by a common
-logical prefix. individual attributes are lazy-loaded.
+DPDObject is a class that helps read/write objects from
+ROOT files in the loosely-defined "DPD" (Derived Physics Data)
+format. The common requirements for the format are:
+    - objets are grouped by a common prefix
+    - attribute names follow the object prefix, separated by undrescore
+    - if a field actually represents a list (or vector) of objects,
+      there should also be a <prefix>_n field, indiciating the
+      size of the list.
 
-N.B.: the code assumes there is an associated branch "<prefix>_n" that contains the length
-of the vectors for the event. (FIXME?)
+Individual attributes are lazy-loaded from the underlying TTree,
+so it is relatively inexpensive to pass around lists of these objects
+and filter/map/perform calculations etc on the fly.
 
-for example, suppose you have a TTree with some vector branches which represent muons:
+For example, suppose you have a TTree with some vector branches which
+represent muons:
     mu_pt, mu_eta, mu_phi, mu_E
 
 you can write your code as those these muons are objects:
     for evt in tree:
-            all_muons = get_objects(tree, 'mu_')
+            all_muons = get_objects(tree, 'mu')
 
             highpt_muons = [m for m in all_muons if m.pt > 100e3]
             central_muons = [m for m in highpt_muons if m.eta < 1.5]
 
             # ...
 '''
-class generic_obj:
+class DPDObject:
     # tree          reference to tree where the object is stored
     # prefix        logical group prefix
     # idx           index in into the vector branches for this object
@@ -49,7 +57,7 @@ class generic_obj:
     their branch prefix '''
 def fetch_objects(tree, prefix):
     for i in xrange(getattr(tree, '%s_n' % prefix)):
-        obj = generic_obj(tree, prefix, i)
+        obj = DPDObject(tree, prefix, i)
         yield obj
 
 ''' Same as above, but load the whole generator into a list '''
@@ -83,6 +91,3 @@ class met_object:
         self.phi = phi
         self.x = et*cos(phi)
         self.y = et*sin(phi)
-
-if __name__ == "__main__":
-    pass

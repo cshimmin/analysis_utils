@@ -10,7 +10,7 @@ import ROOT as r
 # ask ROOT not to hijack command-line args
 r.PyConfig.IgnoreCommandLineOptions = True
 
-from analysis_utils.pytree import PyTree
+from analysis_utils.root.pytree import PyTree
 import numpy as np
 
 
