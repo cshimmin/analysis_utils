@@ -6,7 +6,8 @@ r.PyConfig.IgnoreCommandLineOptions = True
 
 from analysis_utils.variation_loop import run
 from analysis_utils.variation import AnalysisVariation
-from analysis_utils.generic_object import fetch_objects, build_tlv, tlv_particle
+from analysis_utils.generic_object import fetch_objects, build_tlv, tlv_particle, met_object
+from analysis_utils.pytree import PyTree
 
 class ExampleAnalysis(AnalysisVariation):
     def __init__(self, *args, **kwargs):
@@ -16,6 +17,9 @@ class ExampleAnalysis(AnalysisVariation):
         # if you want to capture additional arguments, you
         # can get them from kwargs here. E.g.:
         self._some_argument = kwargs.get('some_argument', None)
+
+        # create a PyTree for the output ntuple
+        self._output_tree = PyTree('example', 'example')
 
     ##########################
     ## Calculable functions ##
@@ -36,6 +40,14 @@ class ExampleAnalysis(AnalysisVariation):
 
     def _get_all_photons(self):
         return [build_tlv(ph, mass=0) for ph in fetch_objects(self._source, 'ph')]
+
+    def _get_all_jets(self):
+        return map(build_tlv, fetch_objects(self._source, 'jet'))
+
+    def _get_nonoverlap_jets(self):
+        return filter( lambda j: not any(
+            (j.tlv.DeltaR(el.tlv) < 0.1 for el in self.hard_electrons) ),
+            self.all_jets)
     
     def _get_z_boson(self):
         electrons = self.hard_electrons
@@ -44,10 +56,46 @@ class ExampleAnalysis(AnalysisVariation):
         el1, el2 = electrons[:2]
 
         return tlv_particle(el1.tlv + el2.tlv)
+    
+    def _get_met(self):
+        return met_object(et=self.met_et, phi=self.met_phi)
 
     def _get_delta_phi(self):
         from numpy import pi
-        return abs(pi - abs(pi - abs(self.met_phi - self.z_boson.phi)))
+        return abs(pi - abs(pi - abs(self.met.phi - self.z_boson.phi)))
+
+
+    ###################
+    ## Output ntuple ##
+    ###################
+
+    ''' override reset() so we can also clear the output ntuple
+        on each new entry '''
+    def reset(self):
+        AnalysisVariation.reset(self)
+        # make sure to reset the output tree
+        self._output_tree.reset()
+
+    ''' This gets called for each event that made it all
+        the way through process_entry() without failing a cut.
+        So, we should populate our ntuple and call Fill(). '''
+    def accept_entry(self):
+        t = self._output_tree
+
+        # we can write out basic scalar branches:
+        t.write_branch(self.event_number, 'event_number')
+        t.write_branch(self.delta_phi, 'delta_phi')
+
+        # we can write certain attributes from simple objects:
+        t.write_object(self.met, 'met', ['et','phi','x','y'])
+        t.write_object(self.z_boson, 'z', ['pt','eta','phi','m'])
+
+        # and we can even write out collections of objects:
+        t.write_object(self.hard_electrons, 'el', ['pt','eta','phi','charge'])
+        t.write_object(self.nonoverlap_jets, 'jet', ['pt','eta','phi','m'])
+
+        # make sure to call Fill() to commit the entry to file.
+        t.Fill()
 
 def process_entry(v):
     v.cut_if( len(v.all_electrons) < 2,
@@ -76,11 +124,19 @@ if __name__ == "__main__":
     input_tree = r.TChain(args.tree)
     map(input_tree.Add, args.input_file)
 
+    # create the output file. Note that this should be done before
+    # creating the ExampleAnalysis instance, so that the TTree will
+    # have the correct output context.
+    outfile = r.TFile(args.out, 'recreate')
+
     nominal = ExampleAnalysis(process_fn=process_entry, name="example")
 
     # run the analysis using the variaton_loop driver (with only
     # the nominal "variation".
-    run(input_tree, nominal=nominal, entry_limit=100)
+    run(input_tree, nominal=nominal)
+
+    outfile.Write()
+    outfile.Close()
 
     print "==== Cutflow ===="
     print nominal._cutflow

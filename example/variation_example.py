@@ -7,7 +7,7 @@ r.PyConfig.IgnoreCommandLineOptions = True
 import analysis_utils.variation as variation
 from analysis_utils.variation_loop import run
 from analysis_utils.pytree import PyTree
-from analysis_utils.generic_object import get_objects, tlv_particle
+from analysis_utils.generic_object import get_objects, tlv_particle, met_object
 
 
 ##########################
@@ -105,18 +105,14 @@ class ExampleVariation(variation.AnalysisVariation):
     ''' Get the smeared MET (random MET added to D3PD value)
         Subject to the met_width parameter '''
     def _get_met_smeared(self):
-        class met:
-            def __init__(self, et, phi):
-                self.et, self.phi = et, phi
-
         if self._met_width == 0:
             self.defer()
             report_calculation('met_smeared')
-            return met(self.met_et, self.met_phi)
+            return met_object(self.met_et, self.met_phi)
 
         # calculate MET with some random smearing
         report_calculation('met_smeared')
-        return met(*smear_met(self.met_et, self.met_phi, self._met_width))
+        return met_object(*smear_met(self.met_et, self.met_phi, self._met_width))
     
     ''' Try to build a Z boson by adding the 4-vectors of
         two hard muons. Otherwise return None '''

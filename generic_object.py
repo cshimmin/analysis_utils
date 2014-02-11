@@ -76,5 +76,13 @@ class tlv_particle:
         self.phi = tlv.Phi()
         self.m = tlv.M()
 
+class met_object:
+    def __init__(self, et, phi):
+        from numpy import cos, sin
+        self.et = et
+        self.phi = phi
+        self.x = et*cos(phi)
+        self.y = et*sin(phi)
+
 if __name__ == "__main__":
     pass
