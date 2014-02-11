@@ -58,34 +58,38 @@ $ ./variation_example.py analysis_example_data/zzllvv.root
 
 When the analysis has finished running, the program will print a summary:
 ```
-==== Cutflow: shift muon pt ====
-2muons:	33471
-hardmu:	29771
-met80:	7878
+==== Cutflow: smeared muons ====
+2muons: 16767
+hardmu: 13237
+met80:  3904
+
 
 ==== Cutflow: smeared met ====
-2muons:	33471
-hardmu:	14170
-met80:	7534
+2muons: 16767
+hardmu: 13841
+met80:  4607
+
 
 ==== Cutflow: jets CR ====
-2muons:	33471
-hardmu:	14170
-met80:	6917
-3jets:	2317
+2muons: 16767
+hardmu: 13841
+met80:  3946
+3jets:  1347
+
 
 ==== Cutflow: nominal ====
-2muons:	33471
-hardmu:	14170
-met80:	6917
+2muons: 16767
+hardmu: 13841
+met80:  3946
+
 
 >>>> Calculation stats: <<<<
-n_muons:	100000
-n_jets:	6917
-n_hard_muons:	66942
-met_smeared:	43941
+all_jets:   3946
+all_muons:  100000
+z_boson:    7850
+hard_muons: 33534
+met_smeared:    28365
 ```
-
 Note that for example, the "shift muon pt" systematic (which adds a constant value to all muon momenta) has considerably higher acceptance at the `hardmu` step, as one would expect. Note also that `n_hard_muons` was calculated 66942 times in total; this is because it was calculated 33471 times for the nominal cutflow, and additional 33471 for the shifted variation. It was not recalculated for any of the other variations.
 
 Datasets
