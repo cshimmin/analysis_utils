@@ -25,7 +25,7 @@ class PyTree(r.TTree):
 
     def write_branch(self, value, bname, btype=None):
         try:
-            v, _ = self.__branch_cache[bname]
+            v, btype = self.__branch_cache[bname]
         except KeyError:
             if btype == None:
                 try:
@@ -41,10 +41,6 @@ class PyTree(r.TTree):
             v = bind_and_backfill(self, bname, btype)
             self.__branch_cache[bname] = (v, btype)
 
-            if self.verbose:
-                print "pytree: Created branch '%s' (type: %s)" % (bname, get_typeclass(btype))
-
-
         # now we have a pointer to the branch memory.
         # write the value depending on the type
         if btype in (int, float, bool):
@@ -58,6 +54,29 @@ class PyTree(r.TTree):
             # just a normal (1-d) vector.
             # copy the input array with push_back
             map(v.push_back, value)
+
+    def write_object(self, obj, prefix, attrs):
+        is_list = (type(obj) == list)
+
+        if type(obj) == list:
+            obj_list = obj
+            for attr in attrs:
+                try:
+                    # doing this the lazy way for now... however
+                    # it is a bit inefficient to construct these
+                    # lists in memory
+                    values = []
+                    for o in obj_list:
+                        values.append(getattr(o, attr))
+                    self.write_branch(values, '%s_%s'%(prefix, attr))
+                except AttributeError:
+                    print "Warning! No attribute `%s_%s`"%(prefix,attr)
+                    continue
+            self.write_branch(len(obj_list), '%s_n'%prefix)
+        else:
+            # just a single object; write out scalar branches
+            for attr in attrs:
+                self.write_branch(getattr(obj, attr), '%s_%s'%(prefix, attr))
 
 
 typenames_long = {float: 'double', int: 'int', bool: 'bool'}
@@ -82,10 +101,13 @@ def infer_btype(val):
     elif t in (int, float, bool):
         return t
     elif t == np.ndarray:
-        dt = {'i': int, 'f': float}[val.dtype.kind]
+        dt = {'i': int, 'f': float, 'b': bool}[val.dtype.kind]
         def nest(n):
             return dt if n==0 else [nest(n-1)]
         return nest(len(val.shape))
+    elif t.__module__ == np.__name__:
+        # got some other numpy type
+        return {'i': int, 'f': float, 'b': bool}[np.dtype(t).kind]
     else:
         raise TypeError('pytree: unsupported type.')
 
