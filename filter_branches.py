@@ -5,7 +5,7 @@ import argparse
 import ROOT as r
 r.PyConfig.IgnoreCommandLineOptions = True
 
-from branch import match_branches_from_file
+from analysis_utils.branch import match_branches_from_file
 
 TREE_NAME = 'physics'
 
