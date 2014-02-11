@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-import argparse
+import ROOT as r
+# ask ROOT not to hijack command-line args
+r.PyConfig.IgnoreCommandLineOptions = True
+
 import analysis_utils.variation as variation
 from analysis_utils.variation_loop import run
 from analysis_utils.pytree import PyTree
-from analysis_utils.generic_object import get_objects
+from analysis_utils.generic_object import get_objects, tlv_particle
 
-import ROOT as r
 
 ##########################
 ## Misc utility methods ##
@@ -132,15 +134,7 @@ class ExampleVariation(variation.AnalysisVariation):
             tlv.SetPtEtaPhiM(m.pt, m.eta, m.phi, 0.106)
             z_vector += tlv
 
-        class reco_particle:
-            def __init__(self, tlv):
-                self.tlv = tlv
-                self.pt = tlv.Pt()
-                self.eta = tlv.Eta()
-                self.phi = tlv.Phi()
-                self.m = tlv.M()
-
-        return reco_particle(z_vector)
+        return tlv_particle(z_vector)
 
 
     ###################
@@ -210,10 +204,11 @@ def jetCR_cutflow(v):
 ## Main program driver ##
 #########################
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser("test variational analysis")
+    import argparse
+    parser = argparse.ArgumentParser("Example variational analysis")
     parser.add_argument('--tree', default='physics',
                         help='the input TTree name')
-    parser.add_argument('--out', default='analysis.root',
+    parser.add_argument('--out', default='variations.root',
                         help='the output filename')
     parser.add_argument('input_file', nargs='+',
                         help='the input file(s) to use')

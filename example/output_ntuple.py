@@ -6,9 +6,13 @@
  with practically zero ROOT-boilerplate crap!
 '''
 
-from analysis_utils.pytree import PyTree
 import ROOT as r
+# ask ROOT not to hijack command-line args
+r.PyConfig.IgnoreCommandLineOptions = True
+
+from analysis_utils.pytree import PyTree
 import numpy as np
+
 
 if __name__ == "__main__":
     # create an output file

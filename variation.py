@@ -71,9 +71,9 @@ class AnalysisVariation:
             self._process_fn(self)
         except TypeError as e:
             if e.message == "'NoneType' object is not callable":
-                if not self.warn_once:
-                    print "Warning! No process function supplied for variation `%s`!" % self.name
-                    self.warn_once = True
+                if not self._warn_once:
+                    print "Warning! No process function supplied for variation `%s`!" % self._name
+                    self._warn_once = True
             else:
                 raise e
 
@@ -82,9 +82,9 @@ class AnalysisVariation:
      variation is valid or not). It may be used, e.g., to write out ntuple branches.
     '''
     def accept_entry(self):
-        if not self.warn_once:
-            print "WARNING! Base class accept_entry() invoked for variation `%s`!" % self.name
-            self.warn_once = True
+        if not self._warn_once:
+            print "WARNING! Base class accept_entry() invoked for variation `%s`!" % self._name
+            self._warn_once = True
 
     '''
      Reset the state of all managed calculables. Also set the current entry status
