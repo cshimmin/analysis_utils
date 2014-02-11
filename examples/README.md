@@ -55,7 +55,7 @@ $ tar -xvzf analysis_example_data.tgz
 
 Next, run the example on one (or more) of the MC files:
 ```
-$ ./variation_example.py analysis_example_data/zzllvv.root
+$ ./variations.py analysis_example_data/zzllvv.root
 ```
 
 When the analysis has finished running, the program will print a summary:
