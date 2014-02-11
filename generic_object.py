@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import ROOT as r
+
 '''
 simple class to load in vector-branches grouped by a common
 logical prefix. individual attributes are lazy-loaded.
@@ -54,6 +56,25 @@ def fetch_objects(tree, prefix):
 def get_objects(tree, prefix):
     return list(fetch_objects(tree, prefix))
 
+''' Build a TLorentzVector from the pt,eta,phi,m attributes
+    of the given object, and bind it to the object's
+    `tlv` attribute. '''
+def build_tlv(obj, mass=None):
+    if mass is not None:
+        obj.tlv = r.TLorentzVector()
+        obj.tlv.SetPtEtaPhiM(obj.pt, obj.eta, obj.phi, mass)
+    else:
+        obj.tlv = r.TLorentzVector(obj.pt, obj.eta, obj.phi, obj.m)
+    return obj
+
+''' Inverse of build_tlv(); build an object from a TLorentzVector. '''
+class tlv_particle:
+    def __init__(self, tlv):
+        self.tlv = tlv
+        self.pt = tlv.Pt()
+        self.eta = tlv.Eta()
+        self.phi = tlv.Phi()
+        self.m = tlv.M()
 
 if __name__ == "__main__":
     pass
