@@ -58,6 +58,8 @@ class ExampleVariation(variation.AnalysisVariation):
     ''' Get the number of muons in the D3PD '''
 
     def _get_n_muons(self):
+        # the defer() function allows the "nominal" variation to
+        # handle the caculation, whenever possible.
         self.defer()
         report_calculation('n_muons')
         return self.mu_n
@@ -66,6 +68,8 @@ class ExampleVariation(variation.AnalysisVariation):
 	    Subject to the mu_shift systematic '''
 
     def _get_n_hard_muons(self):
+        # defer to the nominal variation, unless were's shifting
+        # the muons definition.
         self.defer_unless(self._mu_shift > 0)
         report_calculation('n_hard_muons')
         return sum([(mpt + self._mu_shift) > 65 for mpt in self.mu_pt])
