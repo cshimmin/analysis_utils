@@ -16,7 +16,11 @@ if __name__ == "__main__":
 
     ntup = PyTree('example', 'example')
 
-    for i in xrange(5000):
+    print "Generating output..."
+    N_EVENTS = 5000
+    for i in xrange(N_EVENTS):
+        if i%1000 == 0:
+            print "  %d/%d events ~ %.2f%%" % (i, N_EVENTS, 100.*i/N_EVENTS)
         # call reset on the PyTree; this will set all the
         # sclars to 0, and clear out any vector-valued
         # branches.
@@ -50,3 +54,4 @@ if __name__ == "__main__":
         ntup.Fill()
 
     outfile.Write()
+    print "Done! Saved to file %s" % outfile.GetName()
