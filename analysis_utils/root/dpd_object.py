@@ -35,18 +35,23 @@ class DPDObject:
     # idx           index in into the vector branches for this object
 
     def __init__(self, tree, prefix, idx):
-        self.tree = tree
-        self.prefix = prefix
+        self._tree = tree
+        self._prefix = prefix
         self.idx = idx
 
+    def get_tree(self):
+        return self._tree
+    def get_index(self):
+        return self.idx
+
     def __getattr__(self, attr):
-        answer = getattr(self.tree, '%s_%s' % (self.prefix, attr))[self.idx]
+        answer = getattr(self._tree, '%s_%s' % (self._prefix, attr))[self.idx]
         setattr(self, attr, answer)
         return answer
 
     def serialize(self):
-        branches = [b.GetName()[len(self.prefix) + 1:] for b in self.tree.GetListOfBranches()
-                    if b.GetName().startswith(self.prefix) and b.GetName() != '%s_n' % self.prefix]
+        branches = [b.GetName()[len(self._prefix) + 1:] for b in self._tree.GetListOfBranches()
+                    if b.GetName().startswith(self._prefix) and b.GetName() != '%s_n' % self._prefix]
         # print branches
         data = ((b, getattr(self, b)) for b in branches)
         datasane = filter(lambda d: not 'vector' in str(d[1].__class__), data)
