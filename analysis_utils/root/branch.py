@@ -31,3 +31,13 @@ def match_branches(selections, tree):
     matched_branches = filter(
         lambda b: any((regex.match(b) is not None for regex in regexs)), all_branches)
     return matched_branches
+
+def set_branch_status_from_file(selection_files, tree, status):
+    matched_branches = match_branches_from_file(selection_files, tree)
+    for b in matched_branches:
+        tree.SetBranchStatus(b, status)
+
+def set_branch_status(selections, tree, status):
+    matched_branches = match_branches(seleections, tree)
+    for b in matched_branches:
+        tree.SetBranchStatus(b, status)
