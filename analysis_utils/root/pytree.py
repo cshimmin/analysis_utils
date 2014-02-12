@@ -100,6 +100,9 @@ def infer_btype(val):
         return tuple( infer_btype(v) for v in val )
     elif t in (int, float, bool):
         return t
+    elif t == long:
+        # FIX ME: I'm having trouble with the long datatype. for now just cast it to int.
+        return int
     elif t == np.ndarray:
         dt = {'i': int, 'f': float, 'b': bool}[val.dtype.kind]
         def nest(n):
@@ -138,7 +141,7 @@ def bind_and_backfill(t, bname, btype):
 
 
 def bind_any(tree, bname, btype):
-    if btype in (int, float, bool):
+    if btype in (int, float, bool, long):
         return bind_scalar(tree, bname, btype)
     
     t = type(btype)
