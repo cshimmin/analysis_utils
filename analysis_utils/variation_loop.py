@@ -2,8 +2,11 @@
 
 import variation
 
+''' The number of events between status printouts '''
+STATUS_INTERVAL = 5000
 
-def run(input_tree, nominal=None, variations=[], **kwargs):
+def run(input_tree, nominal=None, variations=[], silent=False, **kwargs):
+    variations = variations[:]
     # set the fallback reference for all the variations.
     for v in variations:
         v.set_source(input_tree)
@@ -23,7 +26,7 @@ def run(input_tree, nominal=None, variations=[], **kwargs):
     total_entries = input_tree.GetEntries()
     entry_limit = kwargs.get('entry_limit', total_entries+1)
     for i, evt in enumerate(input_tree):
-        if i % 5000 == 0:
+        if not silent and (i % STATUS_INTERVAL == 0):
             print "Processed %d/%d ~ %.2f%%" % (i, total_entries, 100. * i / (total_entries))
             if i>=entry_limit:
                 print "Entry limit reached (%d); quitting early." % (entry_limit)
@@ -48,7 +51,10 @@ def run(input_tree, nominal=None, variations=[], **kwargs):
         if keep:
             # if any of the variations managed to pass, write out everything.
             for v in variations:
-                v.accept_entry()
+                if v._valid:
+                    v.accept_entry()
+                else:
+                    v.reject_entry()
 
 if __name__ == "__main__":
     pass

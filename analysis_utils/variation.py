@@ -78,13 +78,21 @@ class AnalysisVariation:
                 raise e
 
     '''
-     This method is called if the input entry has been accepted (whether this
-     variation is valid or not). It may be used, e.g., to write out ntuple branches.
+     This method is called if the input entry has been accepted *and* this instance
+     passed (i.e. is in the valid state). It may be used, e.g., to write out ntuple branches.
     '''
     def accept_entry(self):
         if not self._warn_once:
             print "WARNING! Base class accept_entry() invoked for variation `%s`!" % self._name
             self._warn_once = True
+
+    '''
+     This method is called if the input entry was accepted for *some* variation,
+     but this instance did not pass (i.e. this entry is not valid). It may be used,
+     e.g., to fill an empty ntuple entry.
+    '''
+    def reject_entry(self):
+        pass
 
     '''
      Reset the state of all managed calculables. Also set the current entry status
