@@ -27,6 +27,9 @@ class Cutflow:
                 self.cut_names.append(cut_name)
 
     def __repr__(self):
+        if len(self.cut_names) == 0:
+            return "(no cuts)"
+
         rep_str = ""
         name_width = max(map(len,self.cut_names))
         for cut in self.cut_names:
