@@ -24,7 +24,14 @@ def run(input_tree, nominal=None, variations=[], silent=False, **kwargs):
         return
 
     total_entries = input_tree.GetEntries()
-    entry_limit = kwargs.get('entry_limit', total_entries+1)
+    entry_limit = kwargs.get('entry_limit', 0)
+    if entry_limit < 1:
+        entry_limit = total_entries +1
+
+    input_tree.GetEntry(0)
+    for v in variations:
+        v.pre_run()
+
     for i, evt in enumerate(input_tree):
         if not silent and (i % STATUS_INTERVAL == 0):
             print "Processed %d/%d ~ %.2f%%" % (i, total_entries, 100. * i / (total_entries))
@@ -55,6 +62,9 @@ def run(input_tree, nominal=None, variations=[], silent=False, **kwargs):
                     v.accept_entry()
                 else:
                     v.reject_entry()
+
+    for v in variations:
+        v.post_run()
 
 if __name__ == "__main__":
     pass

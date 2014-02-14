@@ -18,6 +18,13 @@ class AnalysisVariationNTuple(variation.AnalysisVariation):
 
         self._output_tree = PyTree(output_name, self._name)
 
+    def pre_run(self):
+        # "prime" the ntuple:
+        self._output_tree.write_branch(False, '_valid')
+        self.populate_ntuple(self._output_tree)
+    def post_run(self):
+        pass
+
     def get_ntuple(self):
         return self._output_tree
 

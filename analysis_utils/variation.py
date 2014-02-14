@@ -78,6 +78,14 @@ class AnalysisVariation:
                 raise e
 
     '''
+     These methods may be called once (by a driver) before and after the main event loop.
+    '''
+    def pre_run(self):
+        pass
+    def post_run(self):
+        pass
+
+    '''
      This method is called if the input entry has been accepted *and* this instance
      passed (i.e. is in the valid state). It may be used, e.g., to write out ntuple branches.
     '''
