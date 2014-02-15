@@ -39,15 +39,31 @@ class DPDObject:
         self._prefix = prefix
         self.idx = idx
 
+        # NB: This object will be _shared_ by any copy()'d objects!!!
+        # this means that fewer values need to be carried around and 
+        # once any copy does a lookup, all copies will have access.
+        self._sharecache = {}
+
     def get_tree(self):
         return self._tree
     def get_index(self):
         return self.idx
 
     def __getattr__(self, attr):
-        answer = getattr(self._tree, '%s_%s' % (self._prefix, attr))[self.idx]
-        setattr(self, attr, answer)
-        return answer
+        try:
+            return self._sharecache[attr]
+        except KeyError:
+            answer = getattr(self._tree, '%s_%s' % (self._prefix, attr))[self.idx]
+            self._sharecache[attr] = answer
+            return answer
+    
+    ''' Copy operator; NB that any user-defined attributes are copied (i.e. if
+    you've called setattr(), that will not affect the new copy. Only the tree
+    reference info and the shared cache is copied. '''
+    def __copy__(self):
+        o = DPDObject(self._tree, self._prefix, self.idx)
+        o._sharecache = self._sharecache
+        return o
 
     def serialize(self):
         branches = [b.GetName()[len(self._prefix) + 1:] for b in self._tree.GetListOfBranches()
