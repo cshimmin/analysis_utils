@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import variation
+import time
 
 ''' The number of events between status printouts '''
 STATUS_INTERVAL = 5000
@@ -32,9 +33,12 @@ def run(input_tree, nominal=None, variations=[], silent=False, **kwargs):
     for v in variations:
         v.pre_run()
 
+    tstart = t0 = time.time()
     for i, evt in enumerate(input_tree):
         if not silent and (i % STATUS_INTERVAL == 0):
-            print "Processed %d/%d ~ %.2f%%" % (i, total_entries, 100. * i / (total_entries))
+            tnow = time.time()
+            print "Processed %d/%d ~ %.2f%% [%g Hz]" % (i, total_entries, 100. * i / (total_entries), STATUS_INTERVAL/(tnow-t0+0.0001))
+            t0 = time.time()
             if i>=entry_limit:
                 print "Entry limit reached (%d); quitting early." % (entry_limit)
                 break
