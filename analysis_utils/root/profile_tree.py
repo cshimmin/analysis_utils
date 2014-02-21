@@ -55,15 +55,20 @@ class ProfileBase(object):
     def set_behavior(self, behavior):
         self._behavior = behavior
 
-    def print_report(self):
-        if len(self._access_list) == 0:
+    def print_report(self, limit=None, reverse=False):
+        alist = self._access_list
+        if len(alist) == 0:
             print "(no records)"
             return
 
-        name_width = max(map(len, self._access_list.keys()))
-        for k,v in self._access_list.items():
-            padding = name_width-len(k)+2
-            print "%s:%s%d\n" % (k, " "*padding, v)
+
+        name_width = max(map(len, alist.keys()))
+        alist_sorted = sorted(alist.items(), key=lambda x: x[1], reverse=reverse)
+        if limit:
+            alist_sorted = alist_sorted[:limit]
+        for bname, ct in alist_sorted:
+            padding = name_width-len(bname)+2
+            print "%s:%s%d" % (bname, " "*padding, ct)
 
     def __getattr__(self, attr):
         if attr in self._branch_list:
