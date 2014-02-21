@@ -6,18 +6,37 @@
  This will slow your analysis down but is useful when 
  developing new code, to help make sure you're not messing
  up any variable names.
+
+ Usage is very simple: simply replace the TChain constructor.
+
+ So this:
+   import ROOT as r
+   t = r.TChain('mytree')
+   t.Add('somefile.root')
+
+ becomes this:
+   import analysis_utils.root.profile_tree as prof
+   t = prof.ProfileChain('mytree')
+   t.Add('somefile.root')
+
+ You may optionally set the profiling behavior (default is `fail`):
+   t.set_behavior(prof.activate | prof.record)
+ 
+ If you have specified prof.record behavior, you can print a
+ summary of branch access records with `print_report()`.
+
+ The three supported profiling modes (which may be bitwise
+ OR'd together) are:
+   fail     -- raise an attribute error when disabled branches
+                 are accessed
+   record   -- keep track of the number of times each branch
+                 is accessed
+   activate -- activate disabled branches when accessed
+
 '''
 
 import ROOT as r
 
-'''
- Three supported profiling modes: (which may be bitwise OR'd together)
- fail     -- raise an attribute error when disabled branches
-             are accessed
- record   -- keep track of the number of times each branch
-             is accessed
- activate -- activate disabled branches when accessed
-'''
 fail = 1
 record = 2
 activate = 4
