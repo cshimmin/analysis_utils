@@ -54,6 +54,8 @@ class ProfileBase(object):
                 if self._behavior & activate:
                     print "Warning: activating requested branch '%s'!"%attr
                     self.SetBranchStatus(attr, True)
+                    # still need to force a reload, or else the branch data will be empty
+                    self.GetEntry(self.GetReadEntry())
 
             if self._behavior & record:
                 try:
