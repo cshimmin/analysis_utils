@@ -3,3 +3,6 @@
 *.d
 *.so
 *.root
+*.egg-info/
+build/
+dist/
