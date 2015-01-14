@@ -43,7 +43,7 @@ class PyTree(r.TTree):
 
         # now we have a pointer to the branch memory.
         # write the value depending on the type
-        if btype in (int, float, bool):
+        if btype in (int, float, bool, long):
             # just a scalar type; these are managed by numpy.ndarray's:
             v[0] = value
         elif type(btype) == list:
@@ -67,9 +67,12 @@ class PyTree(r.TTree):
                     # lists in memory
                     values = []
                     for o in obj_list:
-                        values.append(getattr(o, attr))
+                        try:
+                            values.append(getattr(o, attr))
+                        except AttributeError:
+                            values.append(o[attr])
                     self.write_branch(values, '%s_%s'%(prefix, attr))
-                except AttributeError:
+                except KeyError:
                     print "Warning! No attribute `%s_%s`"%(prefix,attr)
                     continue
             self.write_branch(len(obj_list), '%s_n'%prefix)
@@ -79,8 +82,9 @@ class PyTree(r.TTree):
                 self.write_branch(getattr(obj, attr), '%s_%s'%(prefix, attr))
 
 
-typenames_long = {float: 'double', int: 'int', bool: 'bool'}
-typenames_short = {float: 'D', int: 'I', bool: 'O'}
+typenames_long = {float: 'double', int: 'int', bool: 'bool', long: 'long'}
+# NB: force unsigned for longs.
+typenames_short = {float: 'D', int: 'I', bool: 'O', long: 'l'}
 
 ''' Exception to represent type inference failure due to
     an empty iterable. '''
@@ -98,11 +102,11 @@ def infer_btype(val):
         return [infer_btype(val[0])]
     elif t == tuple:
         return tuple( infer_btype(v) for v in val )
-    elif t in (int, float, bool):
+    elif t in (int, float, bool, long):
         return t
-    elif t == long:
+    #elif t == long:
         # FIX ME: I'm having trouble with the long datatype. for now just cast it to int.
-        return int
+    #    return int
     elif t == np.ndarray:
         dt = {'i': int, 'f': float, 'b': bool}[val.dtype.kind]
         def nest(n):
@@ -115,7 +119,7 @@ def infer_btype(val):
         raise TypeError('pytree: unsupported type.')
 
 def get_typeclass(btype):
-    if btype in (int, float, bool):
+    if btype in (int, float, bool, long):
         return typenames_long[btype]
 
     t = type(btype)
@@ -157,7 +161,11 @@ def bind_any(tree, bname, btype):
 
 
 def bind_scalar(tree, bname, btype):
-    v = np.array([0], dtype=btype)
+    # hack! force longs to be unsigned
+    nptype = btype
+    if btype == long:
+        nptype='uint64'
+    v = np.array([0], dtype=nptype)
     b = tree.Branch(bname, v, '%s/%s' % (bname, typenames_short[btype]))
     setattr(tree, bname, v)
 
